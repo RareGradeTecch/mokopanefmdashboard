@@ -1,0 +1,2413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin — Mokopane FM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold: #F5A800;
+    --gold-lt: #FFC935;
+    --gold-dk: #D48900;
+    --maroon: #7A1515;
+    --maroon-dk: #4E0D0D;
+    --black: #0A0A0A;
+    --bg: #111111;
+    --panel: #1A1A1A;
+    --panel2: #1F1F1F;
+    --card: #222222;
+    --line: rgba(245,168,0,0.14);
+    --line-soft: rgba(255,255,255,0.08);
+    --text: #FFFFFF;
+    --muted: #9A9A9A;
+    --danger: #E2483C;
+    --danger-dk: #B5352B;
+    --success: #4CAF6D;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dk); border-radius: 4px; }
+
+  /* ═══════ LOGIN SCREEN ═══════ */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 0%, rgba(245,168,0,0.10), transparent),
+      var(--black);
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 400px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 40px 36px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+  }
+
+  .login-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .login-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    letter-spacing: 0.03em;
+    line-height: 1.05;
+    margin-bottom: 28px;
+  }
+
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 7px;
+    letter-spacing: 0.02em;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--line-soft);
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: #262626;
+  }
+  .field textarea { resize: vertical; min-height: 70px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 10px;
+    border: none;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s, background 0.2s, opacity 0.2s;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold-lt), var(--gold-dk));
+    color: var(--black);
+  }
+  .btn-gold:hover:not(:disabled) { box-shadow: 0 6px 22px rgba(245,168,0,0.35); }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--line-soft);
+    color: var(--text);
+  }
+  .btn-ghost:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+
+  .btn-danger {
+    background: rgba(226,72,60,0.12);
+    border: 1px solid rgba(226,72,60,0.4);
+    color: #FF8079;
+  }
+  .btn-danger:hover:not(:disabled) { background: var(--danger); color: white; border-color: var(--danger); }
+
+  .btn-block { width: 100%; }
+  .btn-sm { padding: 8px 14px; font-size: 12px; }
+  .btn-icon { padding: 9px; }
+
+  .login-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .login-divider::before, .login-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .login-divider::before { margin-right: 12px; }
+  .login-divider::after { margin-left: 12px; }
+
+  .login-error {
+    background: rgba(226,72,60,0.12);
+    border: 1px solid rgba(226,72,60,0.35);
+    color: #FF8079;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  /* ═══════ APP SHELL ═══════ */
+  #appShell { display: none; min-height: 100vh; }
+
+  header.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(17,17,17,0.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-mark {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--maroon), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+  .brand-text-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.03em; line-height: 1; }
+  .brand-text-sub { font-size: 11px; color: var(--muted); letter-spacing: 0.04em; }
+
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .save-indicator {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .save-indicator .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 8px rgba(76,175,109,0.6);
+  }
+  .save-indicator.saving .dot { background: var(--gold); animation: pulse 0.9s infinite; }
+  .save-indicator.error .dot { background: var(--danger); }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  .user-chip {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 6px 12px;
+    border: 1px solid var(--line-soft);
+    border-radius: 20px;
+  }
+
+  main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 36px 32px 100px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 6px;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+  }
+  .tab-btn.active { color: var(--gold); }
+  .tab-btn::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -1px;
+    height: 2px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transition: transform 0.25s;
+  }
+  .tab-btn.active::after { transform: scaleX(1); }
+  .tab-btn .count {
+    font-size: 11px;
+    background: var(--card);
+    color: var(--muted);
+    padding: 2px 7px;
+    border-radius: 10px;
+    margin-left: 7px;
+  }
+  .tab-btn.active .count { background: rgba(245,168,0,0.15); color: var(--gold); }
+
+  .panel-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .panel-head h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    letter-spacing: 0.02em;
+    margin-bottom: 6px;
+  }
+  .panel-head p { color: var(--muted); font-size: 13.5px; max-width: 480px; line-height: 1.5; }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── empty state ── */
+  .empty-state {
+    text-align: center;
+    padding: 70px 30px;
+    border: 1px dashed var(--line-soft);
+    border-radius: 16px;
+    color: var(--muted);
+  }
+  .empty-state svg { margin-bottom: 14px; opacity: 0.4; }
+  .empty-state h3 { color: var(--text); font-size: 16px; margin-bottom: 6px; }
+  .empty-state p { font-size: 13px; margin-bottom: 20px; }
+
+  /* ── SHOW CARDS LIST ── */
+  .item-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .show-row {
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 16px;
+    padding: 18px;
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+  .show-row:hover { border-color: var(--line); }
+  .show-row.dragging { opacity: 0.4; }
+  .show-row.drag-over { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+
+  .drag-handle {
+    cursor: grab;
+    color: var(--muted);
+    padding: 8px 4px;
+    flex-shrink: 0;
+    align-self: center;
+    touch-action: none;
+  }
+  .drag-handle:active { cursor: grabbing; }
+
+  .show-preview {
+    width: 96px;
+    height: 96px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--line-soft);
+  }
+  .show-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .show-preview .grad-fill {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  }
+  .show-preview .grad-fill .gi { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: rgba(255,255,255,0.5); }
+  .show-preview .grad-fill .gl { font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.35); text-align: center; padding: 0 4px; }
+
+  .show-fields { flex: 1; min-width: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .show-fields .field { margin-bottom: 0; }
+  .show-fields .field.full { grid-column: 1 / -1; }
+
+  .row-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .mode-toggle {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--line-soft);
+    border-radius: 9px;
+    overflow: hidden;
+    width: fit-content;
+  }
+  .mode-toggle button {
+    background: var(--card);
+    border: none;
+    color: var(--muted);
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 8px 13px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s, color 0.2s;
+  }
+  .mode-toggle button.active { background: var(--gold); color: var(--black); }
+
+  .upload-row { display: flex; align-items: center; gap: 10px; }
+  .upload-row .field { flex: 1; }
+
+  .gradient-row { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+  .swatch-input { display: flex; align-items: center; gap: 8px; }
+  .swatch-input input[type=color] {
+    width: 38px; height: 38px;
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    padding: 2px;
+    background: var(--card);
+    cursor: pointer;
+  }
+
+  .upload-progress {
+    height: 4px;
+    background: var(--card);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 6px;
+    display: none;
+  }
+  .upload-progress.active { display: block; }
+  .upload-progress-bar { height: 100%; background: var(--gold); width: 0%; transition: width 0.2s; }
+
+  /* ── CAROUSEL GRID ── */
+  .carousel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+  }
+
+  .slide-card {
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .slide-card:hover { border-color: var(--line); }
+  .slide-card.dragging { opacity: 0.4; }
+  .slide-card.drag-over { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+
+  .slide-img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: var(--card);
+    overflow: hidden;
+  }
+  .slide-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .slide-drag-handle {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: rgba(10,10,10,0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 7px;
+    padding: 5px 7px;
+    cursor: grab;
+    color: white;
+    display: flex;
+    touch-action: none;
+  }
+  .slide-order-badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: rgba(10,10,10,0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 7px;
+    padding: 4px 9px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .slide-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .slide-actions { display: flex; gap: 8px; }
+  .slide-actions .btn { flex: 1; }
+
+  .add-card-btn {
+    border: 1.5px dashed var(--line-soft);
+    border-radius: 16px;
+    background: transparent;
+    color: var(--muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 200px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .add-card-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(245,168,0,0.04); }
+
+  .add-show-row {
+    border: 1.5px dashed var(--line-soft);
+    border-radius: 16px;
+    background: transparent;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 22px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    width: 100%;
+  }
+  .add-show-row:hover { border-color: var(--gold); color: var(--gold); background: rgba(245,168,0,0.04); }
+
+  /* ── NEWS: CATEGORY MANAGER ── */
+  .category-manager {
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 16px;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+  }
+  .category-manager h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+    margin-bottom: 4px;
+  }
+  .category-manager-sub { color: var(--muted); font-size: 12.5px; margin-bottom: 16px; }
+
+  .category-add-form { display: flex; gap: 10px; margin-bottom: 16px; }
+  .category-add-form input {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--line-soft);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-family: inherit;
+  }
+  .category-add-form input:focus { outline: none; border-color: var(--gold); background: #262626; }
+
+  .category-chip-list { display: flex; flex-wrap: wrap; gap: 10px; }
+  .category-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--line-soft);
+    color: var(--text);
+    padding: 7px 8px 7px 14px;
+    border-radius: 50px;
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+  .category-chip button {
+    background: rgba(226,72,60,0.14);
+    border: none;
+    color: #FF8079;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    padding: 0;
+    transition: background 0.2s, color 0.2s;
+  }
+  .category-chip button:hover { background: var(--danger); color: white; }
+  .category-empty { color: var(--muted); font-size: 12.5px; }
+
+  /* ── NEWS: CARD GRID (mirrors the Photo Carousel card layout) ── */
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px;
+  }
+
+  .news-card-admin {
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .news-card-admin:hover { border-color: var(--line); }
+  .news-card-admin.dragging { opacity: 0.4; }
+  .news-card-admin.drag-over { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+
+  .news-thumb {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: var(--card);
+  }
+  .news-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+  .news-thumb .no-img {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+    background: linear-gradient(145deg, #2a2a2a 0%, #444444 100%);
+  }
+  .news-card-drag-handle {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: rgba(10,10,10,0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 7px;
+    padding: 5px 7px;
+    cursor: grab;
+    color: white;
+    display: flex;
+    touch-action: none;
+    z-index: 2;
+  }
+  .news-card-drag-handle:active { cursor: grabbing; }
+  .news-card-order-badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: rgba(10,10,10,0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 7px;
+    padding: 4px 9px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+    z-index: 2;
+  }
+
+  .news-card-admin-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+  .news-card-admin-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .news-card-admin-row .field { margin-bottom: 0; }
+  .news-card-admin-body .field { margin-bottom: 0; }
+  .news-card-admin-actions { display: flex; gap: 8px; margin-top: 2px; }
+  .news-card-admin-actions .btn { flex: 1; }
+
+  /* ── POPUP ADS: SETTINGS CARD ── */
+  .popup-settings-card {
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 16px;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+  }
+  .popup-settings-card h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+    margin-bottom: 16px;
+  }
+  .popup-settings-row { margin-bottom: 18px; }
+  .popup-settings-row:last-child { margin-bottom: 0; }
+  .popup-settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    cursor: pointer;
+  }
+  .switch-row > span:first-child { display: flex; flex-direction: column; gap: 3px; }
+  .switch-row strong { font-size: 14px; font-weight: 700; }
+  .switch-row small { font-size: 12px; color: var(--muted); }
+
+  .switch { position: relative; flex-shrink: 0; }
+  .switch input {
+    position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer;
+  }
+  .switch-track {
+    display: block;
+    width: 46px;
+    height: 26px;
+    background: var(--card);
+    border: 1px solid var(--line-soft);
+    border-radius: 30px;
+    position: relative;
+    transition: background 0.25s, border-color 0.25s;
+  }
+  .switch-thumb {
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 20px; height: 20px;
+    background: var(--muted);
+    border-radius: 50%;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), background 0.25s;
+  }
+  .switch input:checked + .switch-track { background: rgba(245,168,0,0.18); border-color: var(--gold); }
+  .switch input:checked + .switch-track .switch-thumb { transform: translateX(20px); background: var(--gold); }
+
+  .input-suffix-wrap { position: relative; }
+  .input-suffix-wrap input { padding-right: 68px; }
+  .input-suffix {
+    position: absolute;
+    right: 14px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  /* ── POPUP ADS: CARD GRID ── */
+  .popup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+  }
+
+  .popup-card {
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s, opacity 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .popup-card:hover { border-color: var(--line); }
+  .popup-card.dragging { opacity: 0.4; }
+  .popup-card.drag-over { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+  .popup-card.is-disabled { opacity: 0.55; }
+
+  .popup-img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: var(--card);
+    overflow: hidden;
+  }
+  .popup-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .popup-img-wrap .no-img {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+    background: linear-gradient(145deg, #2a2a2a 0%, #444444 100%);
+  }
+  .popup-drag-handle {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: rgba(10,10,10,0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 7px;
+    padding: 5px 7px;
+    cursor: grab;
+    color: white;
+    display: flex;
+    touch-action: none;
+    z-index: 2;
+  }
+  .popup-drag-handle:active { cursor: grabbing; }
+  .popup-order-badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: rgba(10,10,10,0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 7px;
+    padding: 4px 9px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+    z-index: 2;
+  }
+  .popup-ratio-badge {
+    position: absolute;
+    bottom: 8px; right: 8px;
+    background: rgba(10,10,10,0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 7px;
+    padding: 4px 9px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    z-index: 2;
+  }
+
+  .popup-card-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .popup-card-body .field { margin-bottom: 0; }
+  .popup-card-row { display: grid; grid-template-columns: 1fr; gap: 10px; }
+
+  .popup-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 12px;
+    background: var(--card);
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+  }
+  .popup-status-row span:first-child { font-size: 12.5px; font-weight: 700; }
+
+  .popup-stats {
+    display: flex;
+    gap: 8px;
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .popup-stats span { display: flex; align-items: center; gap: 4px; }
+  .popup-stats strong { color: var(--text); font-weight: 700; }
+
+  .popup-card-actions { display: flex; gap: 8px; margin-top: 2px; }
+  .popup-card-actions .btn { flex: 1; }
+
+  /* ── Toast ── */
+  #toastWrap {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .toast {
+    background: var(--panel2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 13px 18px;
+    font-size: 13px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 220px;
+    animation: toastIn 0.25s ease;
+  }
+  .toast.success { border-color: rgba(76,175,109,0.4); }
+  .toast.error { border-color: rgba(226,72,60,0.4); }
+  .toast .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
+  .toast.error .dot { background: var(--danger); }
+  @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── confirm modal ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    padding: 20px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-box {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px;
+    max-width: 380px;
+    width: 100%;
+  }
+  .modal-box h3 { font-size: 17px; margin-bottom: 10px; }
+  .modal-box p { font-size: 13.5px; color: var(--muted); line-height: 1.55; margin-bottom: 22px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+  .loading-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 13px;
+    gap: 10px;
+  }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid var(--line-soft);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .helper-text { font-size: 11.5px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+
+  @media (max-width: 760px) {
+    header.topbar { padding: 14px 18px; }
+    main { padding: 24px 16px 90px; }
+    .show-row { flex-wrap: wrap; }
+    .show-fields { grid-template-columns: 1fr; }
+    .show-preview { width: 100%; height: 140px; }
+    .row-actions { flex-direction: row; width: 100%; }
+    .row-actions .btn { flex: 1; }
+    .news-grid { grid-template-columns: 1fr; }
+    .news-card-admin-row { grid-template-columns: 1fr; }
+    .popup-grid { grid-template-columns: 1fr; }
+    .popup-settings-grid { grid-template-columns: 1fr; }
+    .brand-text-sub { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ LOGIN ═══════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <p class="login-eyebrow">Mokopane FM · Admin</p>
+    <h2 class="login-title">Sign in to manage<br/>the lineup &amp; gallery</h2>
+    <div class="login-error" id="loginError"></div>
+    <form id="loginForm">
+      <div class="field">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" autocomplete="username" required placeholder="you@mokopanefm.co.za" />
+      </div>
+      <div class="field">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" autocomplete="current-password" required placeholder="••••••••" />
+      </div>
+      <button type="submit" class="btn btn-gold btn-block" id="loginBtn">Sign In</button>
+    </form>
+
+    <div class="login-divider">or</div>
+
+    <button type="button" class="btn btn-ghost btn-block" id="googleLoginBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" style="margin-right:2px;">
+        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.69a5.74 5.74 0 0 1-2.49 3.77v3.12h4.01c2.34-2.16 3.68-5.32 3.68-8.74z"/>
+        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-4.01-3.12c-1.12.75-2.55 1.19-3.92 1.19-3.02 0-5.57-2.04-6.48-4.78H1.31v3.22A12 12 0 0 0 12 24z"/>
+        <path fill="#FBBC05" d="M5.52 14.38A7.16 7.16 0 0 1 5.2 12c0-.82.14-1.61.32-2.38V6.4H1.31A12 12 0 0 0 0 12c0 2.11.55 4.1 1.51 5.84l4.01-3.46z"/>
+        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.69 1.31 6.41l4.21 3.22c.91-2.74 3.46-4.88 6.48-4.88z"/>
+      </svg>
+      Continue with Google
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ APP SHELL ═══════════════════════════════════════ -->
+<div id="appShell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">FM</div>
+      <div>
+        <div class="brand-text-title">MOKOPANE FM</div>
+        <div class="brand-text-sub">Content Admin</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="save-indicator" id="saveIndicator"><span class="dot"></span><span id="saveIndicatorText">Synced</span></div>
+      <span class="user-chip" id="userChip"></span>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn">Sign Out</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="shows">Daily Lineup <span class="count" id="showsCount">0</span></button>
+      <button class="tab-btn" data-tab="carousel">Photo Carousel <span class="count" id="carouselCount">0</span></button>
+      <button class="tab-btn" data-tab="news">News <span class="count" id="newsCount">0</span></button>
+      <button class="tab-btn" data-tab="popups">Popup Ads <span class="count" id="popupsCount">0</span></button>
+    </div>
+
+    <!-- SHOWS TAB -->
+    <section class="tab-panel active" id="tab-shows">
+      <div class="panel-head">
+        <div>
+          <h1>Our Daily Lineup</h1>
+          <p>Edit every show card on the public site — name, time, host, and artwork. Drag the handle to reorder; the order here matches the order on the homepage.</p>
+        </div>
+      </div>
+      <div class="item-list" id="showsList"></div>
+      <div style="margin-top:14px;">
+        <button class="add-show-row" id="addShowBtn">+ Add a new show card</button>
+      </div>
+    </section>
+
+    <!-- CAROUSEL TAB -->
+    <section class="tab-panel" id="tab-carousel">
+      <div class="panel-head">
+        <div>
+          <h1>Mokopane FM In Action</h1>
+          <p>Manage the photo carousel slides. Upload an image and set alt text for accessibility. Drag to reorder.</p>
+        </div>
+      </div>
+      <div class="carousel-grid" id="carouselGrid"></div>
+    </section>
+
+    <!-- NEWS TAB -->
+    <section class="tab-panel" id="tab-news">
+      <div class="panel-head">
+        <div>
+          <h1>Newsroom</h1>
+          <p>Manage categories and every story on the public news page. Drag the handle to reorder; the order here matches the order on the site.</p>
+        </div>
+      </div>
+
+      <div class="category-manager">
+        <h2>Categories</h2>
+        <p class="category-manager-sub">These appear as filter buttons on the public news page. Assign one to each story below.</p>
+        <form class="category-add-form" id="categoryAddForm">
+          <input type="text" id="categoryNameInput" placeholder="e.g. Community, Sport, Music…" maxlength="40" required />
+          <button type="submit" class="btn btn-gold btn-sm">+ Add category</button>
+        </form>
+        <div class="category-chip-list" id="categoryList"></div>
+      </div>
+
+      <div class="news-grid" id="newsList"></div>
+    </section>
+
+    <!-- POPUP ADS TAB -->
+    <section class="tab-panel" id="tab-popups">
+      <div class="panel-head">
+        <div>
+          <h1>Popup Ads</h1>
+          <p>Manage the sponsored popup shown on the homepage and the news page. Add an ad for any interested company, set its image, button and link, and switch it on or off — changes go live instantly, no redeploy needed.</p>
+        </div>
+      </div>
+
+      <div class="popup-settings-card">
+        <h2>Popup behaviour</h2>
+        <div class="popup-settings-row">
+          <label class="switch-row" for="popupEnabledToggle">
+            <span>
+              <strong>Show popup ads on the homepage</strong>
+              <small>Turn the whole feature off without deleting your ads.</small>
+            </span>
+            <span class="switch">
+              <input type="checkbox" id="popupEnabledToggle" />
+              <span class="switch-track"><span class="switch-thumb"></span></span>
+            </span>
+          </label>
+        </div>
+        <div class="popup-settings-row">
+          <label class="switch-row" for="popupEnabledNewsToggle">
+            <span>
+              <strong>Show popup ads on the news page</strong>
+              <small>Controlled separately from the homepage — switch it on or off any time.</small>
+            </span>
+            <span class="switch">
+              <input type="checkbox" id="popupEnabledNewsToggle" />
+              <span class="switch-track"><span class="switch-thumb"></span></span>
+            </span>
+          </label>
+        </div>
+        <div class="popup-settings-row popup-settings-grid">
+          <div class="field" style="margin-bottom:0;">
+            <label>Delay before showing</label>
+            <div class="input-suffix-wrap">
+              <input type="number" id="popupDelayInput" min="0" max="120" step="1" />
+              <span class="input-suffix">seconds</span>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>How often to show a visitor</label>
+            <select id="popupFrequencySelect">
+              <option value="every">Every page load</option>
+              <option value="session">Once per visit (session)</option>
+              <option value="day">Once every 24 hours</option>
+            </select>
+          </div>
+        </div>
+        <div class="helper-text" style="margin-top:14px;">The delay and frequency above apply wherever popups are switched on. If more than one ad is active below, a random one is shown to each visitor so ads rotate fairly.</div>
+      </div>
+
+      <div class="popup-grid" id="popupsGrid"></div>
+    </section>
+  </main>
+</div>
+
+<div class="loading-shell" id="loadingShell" style="display:none;"><span class="spinner"></span> Loading…</div>
+
+<div id="toastWrap"></div>
+
+<div class="modal-overlay" id="confirmOverlay">
+  <div class="modal-box">
+    <h3 id="confirmTitle">Delete this item?</h3>
+    <p id="confirmBody">This can't be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" id="confirmCancel">Cancel</button>
+      <button class="btn btn-danger btn-sm" id="confirmOk">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ FIREBASE ═══════════════════════════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getDatabase, ref, onValue, set, update, remove, push, runTransaction
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCh7Ute6LeSAxcNDEQwZg5m0cA4ujnLCfg",
+  authDomain: "test-17881.firebaseapp.com",
+  projectId: "test-17881",
+  storageBucket: "test-17881.firebasestorage.app",
+  messagingSenderId: "1057428047643",
+  appId: "1:1057428047643:web:f3801c0d933225a5cd35be",
+  databaseURL: "https://test-17881-default-rtdb.firebaseio.com"
+};
+
+const CLOUDINARY_CLOUD = 'dqkujefxj';
+const CLOUDINARY_PRESET = 'banter_box';
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+/* ──────────────────────────────────────────────────────────
+   SEED DATA — mirrors the cards currently hardcoded on the
+   public site. Used only if /shows or /carousel is empty,
+   so the dashboard starts pre-populated with real content.
+─────────────────────────────────────────────────────────── */
+const SEED_SHOWS = [
+  { name: "Morning Pulse", time: "Mon – Fri · 05:00 – 09:00", host: "The Morning Crew", mode: "gradient", gradA: "#7A1515", gradB: "#F5A800", initials: "MP", label: "Morning Pulse", imageUrl: "" },
+  { name: "Motse FM Midday", time: "Mon – Fri · 09:00 – 12:00", host: "Midday Drive", mode: "gradient", gradA: "#1a1a2e", gradB: "#7A1515", initials: "MM", label: "Motse FM Midday", imageUrl: "" },
+  { name: "Lunch & Vibes", time: "Mon – Fri · 12:00 – 16:00", host: "Afternoon Hosts", mode: "image", imageUrl: "https://i.postimg.cc/hGDhzd0N/drive.png", gradA: "#7A1515", gradB: "#F5A800", initials: "LV", label: "Lunch & Vibes" },
+  { name: "Drive Time", time: "Mon – Fri · 16:00 – 19:00", host: "Drive Team", mode: "gradient", gradA: "#0d2137", gradB: "#D48900", initials: "DT", label: "Drive Time", imageUrl: "" },
+  { name: "Gospel Hour", time: "Weekends · 10:00 – 14:00", host: "Gospel Hosts", mode: "gradient", gradA: "#1a2e1a", gradB: "#4E0D0D", initials: "GH", label: "Gospel Hour", imageUrl: "" },
+  { name: "Night Frequency", time: "Fri – Sat · 20:00 – 00:00", host: "Night Crew", mode: "gradient", gradA: "#0a0a1a", gradB: "#7A1515", initials: "NF", label: "Night Frequency", imageUrl: "" }
+];
+
+const SEED_CAROUSEL = [
+  { imageUrl: "https://i.postimg.cc/28Rhrh2y/mtn-1.jpg", alt: "Mokopane FM Studio" },
+  { imageUrl: "https://i.postimg.cc/bJSSjwnf/mtn-2.jpg", alt: "Community Event" },
+  { imageUrl: "https://i.postimg.cc/8kWfKsNV/prem.jpg", alt: "Live Broadcast" },
+  { imageUrl: "https://i.postimg.cc/pLV9LZjC/police.jpg", alt: "Mokopane FM Team" },
+  { imageUrl: "https://i.postimg.cc/3wVW9Qcf/sassa.jpg", alt: "Mokopane FM Team" },
+  { imageUrl: "https://i.postimg.cc/V6tvVHyb/water.jpg", alt: "Mokopane FM Team" }
+];
+
+/* ──────────────────────────────────────────────────────────
+   AUTH
+─────────────────────────────────────────────────────────── */
+const loginScreen = document.getElementById('loginScreen');
+const appShell = document.getElementById('appShell');
+const loginForm = document.getElementById('loginForm');
+const loginBtn = document.getElementById('loginBtn');
+const googleLoginBtn = document.getElementById('googleLoginBtn');
+const loginError = document.getElementById('loginError');
+const userChip = document.getElementById('userChip');
+
+const googleProvider = new GoogleAuthProvider();
+
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  loginError.style.display = 'none';
+  loginBtn.disabled = true;
+  googleLoginBtn.disabled = true;
+  loginBtn.textContent = 'Signing in…';
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (err) {
+    loginError.textContent = friendlyAuthError(err.code);
+    loginError.style.display = 'block';
+    loginBtn.disabled = false;
+    googleLoginBtn.disabled = false;
+    loginBtn.textContent = 'Sign In';
+  }
+});
+
+googleLoginBtn.addEventListener('click', async () => {
+  loginError.style.display = 'none';
+  loginBtn.disabled = true;
+  googleLoginBtn.disabled = true;
+  const originalHtml = googleLoginBtn.innerHTML;
+  googleLoginBtn.textContent = 'Connecting to Google…';
+  try {
+    await signInWithPopup(auth, googleProvider);
+  } catch (err) {
+    loginError.textContent = friendlyAuthError(err.code);
+    loginError.style.display = 'block';
+    loginBtn.disabled = false;
+    googleLoginBtn.disabled = false;
+    googleLoginBtn.innerHTML = originalHtml;
+  }
+});
+
+function friendlyAuthError(code) {
+  switch (code) {
+    case 'auth/invalid-email': return 'That email address looks invalid.';
+    case 'auth/user-disabled': return 'This account has been disabled.';
+    case 'auth/user-not-found':
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential': return 'Incorrect email or password.';
+    case 'auth/too-many-requests': return 'Too many attempts. Please wait a moment and try again.';
+    case 'auth/popup-closed-by-user': return 'Sign-in window closed before authentication completed.';
+    case 'auth/cancelled-popup-request': return 'The connection request was interrupted. Please try again.';
+    default: return 'Sign-in failed. Please try again.';
+  }
+}
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  const ok = await askConfirm('Sign out?', "You'll be returned to the login screen and will need to sign back in to make further changes.", 'Sign Out', 'btn-gold');
+  if (!ok) return;
+  signOut(auth);
+});
+
+let unsubShows = null, unsubCarousel = null, unsubNews = null, unsubCategories = null;
+let unsubPopups = null, unsubPopupSettings = null, unsubPopupEngagement = null;
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    loginScreen.style.display = 'none';
+    appShell.style.display = 'block';
+    userChip.textContent = user.email || user.displayName || 'Authorized User';
+    loginBtn.disabled = false;
+    googleLoginBtn.disabled = false;
+    loginBtn.textContent = 'Sign In';
+    document.getElementById('loginForm').reset();
+    initData();
+  } else {
+    appShell.style.display = 'none';
+    loginScreen.style.display = 'flex';
+    if (unsubShows) { unsubShows(); unsubShows = null; }
+    if (unsubCarousel) { unsubCarousel(); unsubCarousel = null; }
+    if (unsubNews) { unsubNews(); unsubNews = null; }
+    if (unsubCategories) { unsubCategories(); unsubCategories = null; }
+    if (unsubPopups) { unsubPopups(); unsubPopups = null; }
+    if (unsubPopupSettings) { unsubPopupSettings(); unsubPopupSettings = null; }
+    if (unsubPopupEngagement) { unsubPopupEngagement(); unsubPopupEngagement = null; }
+  }
+});
+
+/* ──────────────────────────────────────────────────────────
+   TOASTS + SAVE INDICATOR
+─────────────────────────────────────────────────────────── */
+const toastWrap = document.getElementById('toastWrap');
+function toast(msg, type = 'success') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span class="dot"></span><span>${escapeHtml(msg)}</span>`;
+  toastWrap.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.3s'; setTimeout(() => el.remove(), 300); }, 3200);
+}
+
+const saveIndicator = document.getElementById('saveIndicator');
+const saveIndicatorText = document.getElementById('saveIndicatorText');
+let saveResetTimer = null;
+function setSaveState(state) {
+  clearTimeout(saveResetTimer);
+  saveIndicator.classList.remove('saving', 'error');
+  if (state === 'saving') {
+    saveIndicator.classList.add('saving');
+    saveIndicatorText.textContent = 'Saving…';
+  } else if (state === 'error') {
+    saveIndicator.classList.add('error');
+    saveIndicatorText.textContent = 'Save failed';
+  } else {
+    saveIndicatorText.textContent = 'Synced';
+    saveResetTimer = setTimeout(() => { saveIndicatorText.textContent = 'Synced'; }, 1500);
+  }
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str ?? '';
+  return d.innerHTML;
+}
+
+/* ──────────────────────────────────────────────────────────
+   CONFIRM MODAL
+─────────────────────────────────────────────────────────── */
+const confirmOverlay = document.getElementById('confirmOverlay');
+const confirmTitle = document.getElementById('confirmTitle');
+const confirmBody = document.getElementById('confirmBody');
+const confirmOk = document.getElementById('confirmOk');
+const confirmCancel = document.getElementById('confirmCancel');
+let confirmResolver = null;
+
+function askConfirm(title, body, confirmText = 'Delete', confirmClass = 'btn-danger') {
+  confirmTitle.textContent = title;
+  confirmBody.textContent = body;
+  confirmOk.textContent = confirmText;
+  confirmOk.className = `btn btn-sm ${confirmClass}`;
+  confirmOverlay.classList.add('active');
+  return new Promise((resolve) => { confirmResolver = resolve; });
+}
+confirmOk.addEventListener('click', () => { confirmOverlay.classList.remove('active'); confirmResolver?.(true); });
+confirmCancel.addEventListener('click', () => { confirmOverlay.classList.remove('active'); confirmResolver?.(false); });
+confirmOverlay.addEventListener('click', (e) => { if (e.target === confirmOverlay) { confirmOverlay.classList.remove('active'); confirmResolver?.(false); } });
+
+/* ──────────────────────────────────────────────────────────
+   TABS
+─────────────────────────────────────────────────────────── */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ──────────────────────────────────────────────────────────
+   CLOUDINARY UPLOAD
+─────────────────────────────────────────────────────────── */
+async function uploadToCloudinary(file, onProgress) {
+  return new Promise((resolve, reject) => {
+    if (!file) return reject(new Error('No file selected'));
+    if (!file.type.startsWith('image/')) return reject(new Error('Please choose an image file'));
+    if (file.size > 10 * 1024 * 1024) return reject(new Error('Image is larger than 10MB'));
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_PRESET);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`);
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable && onProgress) onProgress(Math.round((e.loaded / e.total) * 100));
+    };
+    xhr.onload = () => {
+      try {
+        const res = JSON.parse(xhr.responseText);
+        if (xhr.status >= 200 && xhr.status < 300 && res.secure_url) {
+          resolve(res.secure_url);
+        } else {
+          reject(new Error(res.error?.message || 'Upload failed'));
+        }
+      } catch {
+        reject(new Error('Upload failed — unexpected response'));
+      }
+    };
+    xhr.onerror = () => reject(new Error('Upload failed — network error'));
+    xhr.send(formData);
+  });
+}
+
+/* ──────────────────────────────────────────────────────────
+   GENERIC DRAG-TO-REORDER (mouse + touch via HTML5 DnD where
+   available, with pointer-based fallback for touch devices)
+─────────────────────────────────────────────────────────── */
+function makeSortable(container, itemSelector, onReorder) {
+  let dragEl = null;
+
+  container.addEventListener('dragstart', (e) => {
+    const item = e.target.closest(itemSelector);
+    if (!item) return;
+    dragEl = item;
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', item.dataset.id);
+  });
+
+  container.addEventListener('dragend', (e) => {
+    const item = e.target.closest(itemSelector);
+    if (item) item.classList.remove('dragging');
+    container.querySelectorAll(itemSelector).forEach(el => el.classList.remove('drag-over'));
+    dragEl = null;
+  });
+
+  container.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    const target = e.target.closest(itemSelector);
+    container.querySelectorAll(itemSelector).forEach(el => el.classList.remove('drag-over'));
+    if (target && target !== dragEl) target.classList.add('drag-over');
+  });
+
+  container.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const target = e.target.closest(itemSelector);
+    container.querySelectorAll(itemSelector).forEach(el => el.classList.remove('drag-over'));
+    if (!target || !dragEl || target === dragEl) return;
+
+    const items = Array.from(container.querySelectorAll(itemSelector));
+    const dragIdx = items.indexOf(dragEl);
+    const targetIdx = items.indexOf(target);
+    if (dragIdx < targetIdx) {
+      target.after(dragEl);
+    } else {
+      target.before(dragEl);
+    }
+    const newOrderIds = Array.from(container.querySelectorAll(itemSelector)).map(el => el.dataset.id);
+    onReorder(newOrderIds);
+  });
+}
+
+/* ──────────────────────────────────────────────────────────
+   SHOWS — DATA LAYER
+─────────────────────────────────────────────────────────── */
+const showsRef = ref(db, 'shows');
+const carouselRef = ref(db, 'carousel');
+const newsRef = ref(db, 'news');
+const newsCategoriesRef = ref(db, 'newsCategories');
+const popupsRef = ref(db, 'popups');
+const popupSettingsRef = ref(db, 'popupSettings');
+const popupEngagementRef = ref(db, 'popupEngagement');
+let showsCache = {};
+let carouselCache = {};
+let newsCache = {};
+let categoriesCache = {};
+let popupsCache = {};
+let popupSettingsCache = { enabled: true, newsEnabled: false, delaySeconds: 4, frequency: 'session' };
+let popupEngagementCache = {};
+
+function initData() {
+  if (unsubShows) unsubShows();
+  if (unsubCarousel) unsubCarousel();
+  if (unsubNews) unsubNews();
+  if (unsubCategories) unsubCategories();
+  if (unsubPopups) unsubPopups();
+  if (unsubPopupSettings) unsubPopupSettings();
+  if (unsubPopupEngagement) unsubPopupEngagement();
+
+  unsubShows = onValue(showsRef, async (snap) => {
+    const val = snap.val();
+    if (!val) {
+      // Seed on first run
+      await seedShows();
+      return;
+    }
+    showsCache = val;
+    renderShows();
+  }, (err) => { console.error(err); toast('Could not load shows: ' + err.message, 'error'); });
+
+  unsubCarousel = onValue(carouselRef, async (snap) => {
+    const val = snap.val();
+    if (!val) {
+      await seedCarousel();
+      return;
+    }
+    carouselCache = val;
+    renderCarousel();
+  }, (err) => { console.error(err); toast('Could not load carousel: ' + err.message, 'error'); });
+
+  unsubNews = onValue(newsRef, (snap) => {
+    newsCache = snap.val() || {};
+    renderNews();
+  }, (err) => { console.error(err); toast('Could not load news: ' + err.message, 'error'); });
+
+  unsubCategories = onValue(newsCategoriesRef, (snap) => {
+    categoriesCache = snap.val() || {};
+    renderCategories();
+    renderNews();
+  }, (err) => { console.error(err); toast('Could not load categories: ' + err.message, 'error'); });
+
+  unsubPopups = onValue(popupsRef, (snap) => {
+    popupsCache = snap.val() || {};
+    renderPopups();
+  }, (err) => { console.error(err); toast('Could not load popup ads: ' + err.message, 'error'); });
+
+  unsubPopupSettings = onValue(popupSettingsRef, (snap) => {
+    popupSettingsCache = { enabled: true, newsEnabled: false, delaySeconds: 4, frequency: 'session', ...(snap.val() || {}) };
+    renderPopupSettings();
+  }, (err) => { console.error(err); toast('Could not load popup settings: ' + err.message, 'error'); });
+
+  unsubPopupEngagement = onValue(popupEngagementRef, (snap) => {
+    popupEngagementCache = snap.val() || {};
+    renderPopups();
+  }, (err) => console.error(err));
+}
+
+async function seedShows() {
+  const updates = {};
+  SEED_SHOWS.forEach((show, i) => {
+    const key = push(showsRef).key;
+    updates[key] = { ...show, order: i, createdAt: Date.now() };
+  });
+  await update(showsRef, updates);
+}
+
+async function seedCarousel() {
+  const updates = {};
+  SEED_CAROUSEL.forEach((slide, i) => {
+    const key = push(carouselRef).key;
+    updates[key] = { ...slide, order: i, createdAt: Date.now() };
+  });
+  await update(carouselRef, updates);
+}
+
+function sortedEntries(cache) {
+  return Object.entries(cache).sort((a, b) => (a[1].order ?? 0) - (b[1].order ?? 0));
+}
+
+/* ──────────────────────────────────────────────────────────
+   SHOWS — RENDER
+─────────────────────────────────────────────────────────── */
+const showsList = document.getElementById('showsList');
+const showsCountEl = document.getElementById('showsCount');
+
+function renderShows() {
+  const entries = sortedEntries(showsCache);
+  showsCountEl.textContent = entries.length;
+
+  if (entries.length === 0) {
+    showsList.innerHTML = `
+      <div class="empty-state">
+        <h3>No shows yet</h3>
+        <p>Add your first show card — it'll appear on the homepage lineup.</p>
+      </div>`;
+    return;
+  }
+
+  showsList.innerHTML = entries.map(([id, show]) => showRowTemplate(id, show)).join('');
+
+  entries.forEach(([id, show]) => attachShowRowHandlers(id));
+
+  makeSortable(showsList, '.show-row', async (newOrderIds) => {
+    const updates = {};
+    newOrderIds.forEach((id, i) => { updates[`${id}/order`] = i; });
+    setSaveState('saving');
+    try {
+      await update(showsRef, updates);
+      setSaveState('synced');
+    } catch (err) {
+      setSaveState('error');
+      toast('Could not save new order: ' + err.message, 'error');
+    }
+  });
+}
+
+function showRowTemplate(id, show) {
+  const mode = show.mode || 'gradient';
+  const previewHtml = mode === 'image' && show.imageUrl
+    ? `<img src="${escapeHtml(show.imageUrl)}" alt="" />`
+    : `<div class="grad-fill" style="background:linear-gradient(145deg, ${show.gradA || '#222'} 0%, ${show.gradB || '#444'} 100%);">
+         <div class="gi">${escapeHtml(show.initials || '??')}</div>
+         <div class="gl">${escapeHtml(show.label || show.name || '')}</div>
+       </div>`;
+
+  return `
+  <div class="show-row" data-id="${id}" draggable="true">
+    <div class="drag-handle" title="Drag to reorder">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="1.6"/><circle cx="16" cy="6" r="1.6"/><circle cx="8" cy="12" r="1.6"/><circle cx="16" cy="12" r="1.6"/><circle cx="8" cy="18" r="1.6"/><circle cx="16" cy="18" r="1.6"/></svg>
+    </div>
+
+    <div class="show-preview" data-role="preview">${previewHtml}</div>
+
+    <div class="show-fields">
+      <div class="field">
+        <label>Show name</label>
+        <input type="text" data-field="name" value="${escapeHtml(show.name || '')}" placeholder="e.g. Morning Pulse" />
+      </div>
+      <div class="field">
+        <label>Host(s)</label>
+        <input type="text" data-field="host" value="${escapeHtml(show.host || '')}" placeholder="e.g. The Morning Crew" />
+      </div>
+      <div class="field full">
+        <label>Time slot</label>
+        <input type="text" data-field="time" value="${escapeHtml(show.time || '')}" placeholder="e.g. Mon – Fri · 05:00 – 09:00" />
+      </div>
+
+      <div class="field full">
+        <label>Artwork</label>
+        <div class="mode-toggle" data-role="modeToggle">
+          <button type="button" data-mode="image" class="${mode === 'image' ? 'active' : ''}">Photo</button>
+          <button type="button" data-mode="gradient" class="${mode === 'gradient' ? 'active' : ''}">Gradient + Initials</button>
+        </div>
+      </div>
+
+      <div class="field full" data-role="imageBlock" style="${mode === 'image' ? '' : 'display:none;'}">
+        <div class="upload-row">
+          <div class="field" style="margin-bottom:0;">
+            <input type="file" accept="image/*" data-field="imageFile" />
+            <div class="upload-progress" data-role="progress"><div class="upload-progress-bar" data-role="progressBar"></div></div>
+            <div class="helper-text">Or paste an image URL below.</div>
+            <input type="text" data-field="imageUrl" value="${escapeHtml(show.imageUrl || '')}" placeholder="https://…" style="margin-top:8px;" />
+          </div>
+        </div>
+      </div>
+
+      <div class="field full" data-role="gradientBlock" style="${mode === 'gradient' ? '' : 'display:none;'}">
+        <div class="gradient-row">
+          <div class="swatch-input">
+            <input type="color" data-field="gradA" value="${normalizeHex(show.gradA) || '#222222'}" />
+            <span class="helper-text">Color A</span>
+          </div>
+          <div class="swatch-input">
+            <input type="color" data-field="gradB" value="${normalizeHex(show.gradB) || '#444444'}" />
+            <span class="helper-text">Color B</span>
+          </div>
+          <div class="field" style="margin-bottom:0; width:90px;">
+            <label>Initials</label>
+            <input type="text" data-field="initials" maxlength="3" value="${escapeHtml(show.initials || '')}" placeholder="MP" />
+          </div>
+          <div class="field" style="margin-bottom:0; flex:1; min-width:140px;">
+            <label>Label text</label>
+            <input type="text" data-field="label" value="${escapeHtml(show.label || '')}" placeholder="Morning Pulse" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row-actions">
+      <button class="btn btn-gold btn-sm" data-role="save">Save</button>
+      <button class="btn btn-danger btn-sm" data-role="delete">Delete</button>
+    </div>
+  </div>`;
+}
+
+function normalizeHex(val) {
+  if (!val) return null;
+  if (/^#[0-9a-fA-F]{6}$/.test(val)) return val;
+  if (/^#[0-9a-fA-F]{3}$/.test(val)) {
+    return '#' + val.slice(1).split('').map(c => c + c).join('');
+  }
+  return null;
+}
+
+function attachShowRowHandlers(id) {
+  const row = showsList.querySelector(`.show-row[data-id="${id}"]`);
+  if (!row) return;
+
+  const modeToggle = row.querySelector('[data-role="modeToggle"]');
+  const imageBlock = row.querySelector('[data-role="imageBlock"]');
+  const gradientBlock = row.querySelector('[data-role="gradientBlock"]');
+  const previewEl = row.querySelector('[data-role="preview"]');
+  let pendingMode = (showsCache[id]?.mode) || 'gradient';
+  let pendingImageUrl = showsCache[id]?.imageUrl || '';
+
+  function refreshPreview() {
+    const name = row.querySelector('[data-field="name"]').value;
+    const initials = row.querySelector('[data-field="initials"]')?.value || '';
+    const label = row.querySelector('[data-field="label"]')?.value || name;
+    const gradA = row.querySelector('[data-field="gradA"]')?.value || '#222222';
+    const gradB = row.querySelector('[data-field="gradB"]')?.value || '#444444';
+
+    if (pendingMode === 'image' && pendingImageUrl) {
+      previewEl.innerHTML = `<img src="${escapeHtml(pendingImageUrl)}" alt="" />`;
+    } else {
+      previewEl.innerHTML = `<div class="grad-fill" style="background:linear-gradient(145deg, ${gradA} 0%, ${gradB} 100%);">
+        <div class="gi">${escapeHtml(initials || '??')}</div>
+        <div class="gl">${escapeHtml(label || '')}</div>
+      </div>`;
+    }
+  }
+
+  modeToggle.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      pendingMode = btn.dataset.mode;
+      modeToggle.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+      imageBlock.style.display = pendingMode === 'image' ? '' : 'none';
+      gradientBlock.style.display = pendingMode === 'gradient' ? '' : 'none';
+      refreshPreview();
+    });
+  });
+
+  row.querySelectorAll('[data-field]').forEach(input => {
+    input.addEventListener('input', () => {
+      if (input.dataset.field === 'imageUrl') pendingImageUrl = input.value;
+      refreshPreview();
+    });
+  });
+
+  const fileInput = row.querySelector('[data-field="imageFile"]');
+  const progressWrap = row.querySelector('[data-role="progress"]');
+  const progressBar = row.querySelector('[data-role="progressBar"]');
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    progressWrap.classList.add('active');
+    progressBar.style.width = '0%';
+    try {
+      const url = await uploadToCloudinary(file, (pct) => { progressBar.style.width = pct + '%'; });
+      pendingImageUrl = url;
+      row.querySelector('[data-field="imageUrl"]').value = url;
+      refreshPreview();
+      toast('Image uploaded — click Save to apply');
+    } catch (err) {
+      toast('Upload failed: ' + err.message, 'error');
+    } finally {
+      setTimeout(() => progressWrap.classList.remove('active'), 500);
+    }
+  });
+
+  row.querySelector('[data-role="save"]').addEventListener('click', async () => {
+    const payload = {
+      name: row.querySelector('[data-field="name"]').value.trim(),
+      host: row.querySelector('[data-field="host"]').value.trim(),
+      time: row.querySelector('[data-field="time"]').value.trim(),
+      mode: pendingMode,
+      imageUrl: row.querySelector('[data-field="imageUrl"]').value.trim(),
+      gradA: row.querySelector('[data-field="gradA"]').value,
+      gradB: row.querySelector('[data-field="gradB"]').value,
+      initials: row.querySelector('[data-field="initials"]').value.trim(),
+      label: row.querySelector('[data-field="label"]').value.trim(),
+      updatedAt: Date.now()
+    };
+    if (!payload.name) { toast('Show name is required', 'error'); return; }
+
+    setSaveState('saving');
+    try {
+      await update(ref(db, `shows/${id}`), payload);
+      setSaveState('synced');
+      toast(`"${payload.name}" saved`);
+    } catch (err) {
+      setSaveState('error');
+      toast('Save failed: ' + err.message, 'error');
+    }
+  });
+
+  row.querySelector('[data-role="delete"]').addEventListener('click', async () => {
+    const name = showsCache[id]?.name || 'this show';
+    const ok = await askConfirm('Delete this show?', `"${name}" will be removed from the homepage lineup. This can't be undone.`);
+    if (!ok) return;
+    try {
+      await remove(ref(db, `shows/${id}`));
+      toast(`"${name}" deleted`);
+    } catch (err) {
+      toast('Delete failed: ' + err.message, 'error');
+    }
+  });
+}
+
+document.getElementById('addShowBtn').addEventListener('click', async () => {
+  const entries = sortedEntries(showsCache);
+  const newShow = {
+    name: 'New Show',
+    time: 'Mon – Fri · 00:00 – 00:00',
+    host: 'Host Name',
+    mode: 'gradient',
+    gradA: '#222222',
+    gradB: '#444444',
+    initials: 'NS',
+    label: 'New Show',
+    imageUrl: '',
+    order: entries.length,
+    createdAt: Date.now()
+  };
+  try {
+    await push(showsRef, newShow);
+    toast('New show card added — edit it below');
+  } catch (err) {
+    toast('Could not add show: ' + err.message, 'error');
+  }
+});
+
+/* ──────────────────────────────────────────────────────────
+   CAROUSEL — RENDER
+─────────────────────────────────────────────────────────── */
+const carouselGrid = document.getElementById('carouselGrid');
+const carouselCountEl = document.getElementById('carouselCount');
+
+function renderCarousel() {
+  const entries = sortedEntries(carouselCache);
+  carouselCountEl.textContent = entries.length;
+
+  let html = entries.map(([id, slide], i) => slideCardTemplate(id, slide, i)).join('');
+  html += `<button class="add-card-btn" id="addSlideBtn">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+    Add a slide
+  </button>`;
+
+  carouselGrid.innerHTML = html;
+
+  entries.forEach(([id]) => attachSlideHandlers(id));
+  document.getElementById('addSlideBtn').addEventListener('click', addSlide);
+
+  makeSortable(carouselGrid, '.slide-card', async (newOrderIds) => {
+    const updates = {};
+    newOrderIds.forEach((id, i) => { updates[`${id}/order`] = i; });
+    setSaveState('saving');
+    try {
+      await update(carouselRef, updates);
+      setSaveState('synced');
+    } catch (err) {
+      setSaveState('error');
+      toast('Could not save new order: ' + err.message, 'error');
+    }
+  });
+}
+
+function slideCardTemplate(id, slide, index) {
+  return `
+  <div class="slide-card" data-id="${id}" draggable="true">
+    <div class="slide-img-wrap">
+      <img src="${escapeHtml(slide.imageUrl || '')}" alt="${escapeHtml(slide.alt || '')}" data-role="img" />
+      <div class="slide-drag-handle" title="Drag to reorder">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="1.6"/><circle cx="16" cy="6" r="1.6"/><circle cx="8" cy="12" r="1.6"/><circle cx="16" cy="12" r="1.6"/><circle cx="8" cy="18" r="1.6"/><circle cx="16" cy="18" r="1.6"/></svg>
+      </div>
+      <div class="slide-order-badge">#${index + 1}</div>
+    </div>
+    <div class="slide-body">
+      <div class="field" style="margin-bottom:0;">
+        <label>Replace image</label>
+        <input type="file" accept="image/*" data-field="imageFile" />
+        <div class="upload-progress" data-role="progress"><div class="upload-progress-bar" data-role="progressBar"></div></div>
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label>Alt text</label>
+        <input type="text" data-field="alt" value="${escapeHtml(slide.alt || '')}" placeholder="Describe the photo" />
+      </div>
+      <div class="slide-actions">
+        <button class="btn btn-gold btn-sm" data-role="save">Save</button>
+        <button class="btn btn-danger btn-sm" data-role="delete">Delete</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function attachSlideHandlers(id) {
+  const card = carouselGrid.querySelector(`.slide-card[data-id="${id}"]`);
+  if (!card) return;
+
+  let pendingImageUrl = carouselCache[id]?.imageUrl || '';
+
+  const fileInput = card.querySelector('[data-field="imageFile"]');
+  const progressWrap = card.querySelector('[data-role="progress"]');
+  const progressBar = card.querySelector('[data-role="progressBar"]');
+  const imgEl = card.querySelector('[data-role="img"]');
+
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    progressWrap.classList.add('active');
+    progressBar.style.width = '0%';
+    try {
+      const url = await uploadToCloudinary(file, (pct) => { progressBar.style.width = pct + '%'; });
+      pendingImageUrl = url;
+      imgEl.src = url;
+      toast('Image uploaded — click Save to apply');
+    } catch (err) {
+      toast('Upload failed: ' + err.message, 'error');
+    } finally {
+      setTimeout(() => progressWrap.classList.remove('active'), 500);
+    }
+  });
+
+  card.querySelector('[data-role="save"]').addEventListener('click', async () => {
+    const alt = card.querySelector('[data-field="alt"]').value.trim();
+    if (!pendingImageUrl) { toast('Please upload an image first', 'error'); return; }
+    setSaveState('saving');
+    try {
+      await update(ref(db, `carousel/${id}`), { imageUrl: pendingImageUrl, alt, updatedAt: Date.now() });
+      setSaveState('synced');
+      toast('Slide saved');
+    } catch (err) {
+      setSaveState('error');
+      toast('Save failed: ' + err.message, 'error');
+    }
+  });
+
+  card.querySelector('[data-role="delete"]').addEventListener('click', async () => {
+    const ok = await askConfirm('Delete this slide?', "It will be removed from the homepage carousel. This can't be undone.");
+    if (!ok) return;
+    try {
+      await remove(ref(db, `carousel/${id}`));
+      toast('Slide deleted');
+    } catch (err) {
+      toast('Delete failed: ' + err.message, 'error');
+    }
+  });
+}
+
+async function addSlide() {
+  const entries = sortedEntries(carouselCache);
+  const newSlide = {
+    imageUrl: '',
+    alt: '',
+    order: entries.length,
+    createdAt: Date.now()
+  };
+  try {
+    await push(carouselRef, newSlide);
+    toast('New slide added — upload an image below');
+  } catch (err) {
+    toast('Could not add slide: ' + err.message, 'error');
+  }
+}
+
+/* ──────────────────────────────────────────────────────────
+   POPUP ADS — GLOBAL SETTINGS
+   Read from /popupSettings by the homepage and the news page.
+   `enabled` and `newsEnabled` switch the feature on/off for
+   each page independently; delaySeconds and frequency are
+   shared behaviour settings that apply wherever popups are on.
+─────────────────────────────────────────────────────────── */
+const popupEnabledToggle = document.getElementById('popupEnabledToggle');
+const popupEnabledNewsToggle = document.getElementById('popupEnabledNewsToggle');
+const popupDelayInput = document.getElementById('popupDelayInput');
+const popupFrequencySelect = document.getElementById('popupFrequencySelect');
+let settingsRenderGuard = false;
+
+function renderPopupSettings() {
+  settingsRenderGuard = true;
+  popupEnabledToggle.checked = !!popupSettingsCache.enabled;
+  popupEnabledNewsToggle.checked = !!popupSettingsCache.newsEnabled;
+  popupDelayInput.value = popupSettingsCache.delaySeconds ?? 4;
+  popupFrequencySelect.value = popupSettingsCache.frequency || 'session';
+  settingsRenderGuard = false;
+}
+
+async function savePopupSettings(partial) {
+  setSaveState('saving');
+  try {
+    await update(popupSettingsRef, { ...partial, updatedAt: Date.now() });
+    setSaveState('synced');
+  } catch (err) {
+    setSaveState('error');
+    toast('Could not save popup settings: ' + err.message, 'error');
+  }
+}
+
+popupEnabledToggle.addEventListener('change', () => {
+  if (settingsRenderGuard) return;
+  savePopupSettings({ enabled: popupEnabledToggle.checked });
+  toast(popupEnabledToggle.checked ? 'Popup ads turned on for the homepage' : 'Popup ads turned off for the homepage');
+});
+
+popupEnabledNewsToggle.addEventListener('change', () => {
+  if (settingsRenderGuard) return;
+  savePopupSettings({ newsEnabled: popupEnabledNewsToggle.checked });
+  toast(popupEnabledNewsToggle.checked ? 'Popup ads turned on for the news page' : 'Popup ads turned off for the news page');
+});
+
+popupDelayInput.addEventListener('change', () => {
+  if (settingsRenderGuard) return;
+  let val = parseInt(popupDelayInput.value, 10);
+  if (isNaN(val) || val < 0) val = 0;
+  if (val > 120) val = 120;
+  popupDelayInput.value = val;
+  savePopupSettings({ delaySeconds: val });
+});
+
+popupFrequencySelect.addEventListener('change', () => {
+  if (settingsRenderGuard) return;
+  savePopupSettings({ frequency: popupFrequencySelect.value });
+});
+
+/* ──────────────────────────────────────────────────────────
+   POPUP ADS — CARD GRID
+   Each entry is one advertiser's popup: a square (1:1) image,
+   company name, a customizable call-to-action button, and the
+   URL it opens. The "Active" switch controls whether it's in
+   rotation — wherever popups are switched on (homepage and/or
+   news page), if more than one ad is active a random one is
+   picked per visitor so ads rotate fairly. Impressions/clicks
+   are written by whichever page shows the popup.
+─────────────────────────────────────────────────────────── */
+const popupsGrid = document.getElementById('popupsGrid');
+const popupsCountEl = document.getElementById('popupsCount');
+
+function renderPopups() {
+  const entries = sortedEntries(popupsCache);
+  popupsCountEl.textContent = entries.length;
+
+  let html = entries.map(([id, item], i) => popupCardTemplate(id, item, i)).join('');
+  html += `<button class="add-card-btn" id="addPopupBtn">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+    Add a popup ad
+  </button>`;
+
+  popupsGrid.innerHTML = html;
+
+  entries.forEach(([id]) => attachPopupHandlers(id));
+  document.getElementById('addPopupBtn').addEventListener('click', addPopupAd);
+
+  makeSortable(popupsGrid, '.popup-card', async (newOrderIds) => {
+    const updates = {};
+    newOrderIds.forEach((id, i) => { updates[`${id}/order`] = i; });
+    setSaveState('saving');
+    try {
+      await update(popupsRef, updates);
+      setSaveState('synced');
+    } catch (err) {
+      setSaveState('error');
+      toast('Could not save new order: ' + err.message, 'error');
+    }
+  });
+}
+
+function popupCardTemplate(id, item, index) {
+  const hasImg = !!item.imageUrl;
+  const imgHtml = hasImg
+    ? `<img src="${escapeHtml(item.imageUrl)}" alt="" data-role="img" />`
+    : `<div class="no-img" data-role="noImg"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></div>`;
+  const eng = popupEngagementCache[id] || {};
+
+  return `
+  <div class="popup-card${item.enabled ? '' : ' is-disabled'}" data-id="${id}" draggable="true">
+    <div class="popup-img-wrap" data-role="imgWrap">
+      ${imgHtml}
+      <div class="popup-drag-handle" title="Drag to reorder">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="1.6"/><circle cx="16" cy="6" r="1.6"/><circle cx="8" cy="12" r="1.6"/><circle cx="16" cy="12" r="1.6"/><circle cx="8" cy="18" r="1.6"/><circle cx="16" cy="18" r="1.6"/></svg>
+      </div>
+      <div class="popup-order-badge">#${index + 1}</div>
+      <div class="popup-ratio-badge">1:1</div>
+    </div>
+    <div class="popup-card-body">
+      <div class="field">
+        <label>Ad image (square, 1:1)</label>
+        <input type="file" accept="image/*" data-field="imageFile" />
+        <div class="upload-progress" data-role="progress"><div class="upload-progress-bar" data-role="progressBar"></div></div>
+        <div class="helper-text">Use a square image — it will be cropped to 1:1 on the popup.</div>
+      </div>
+      <div class="field">
+        <label>Company name</label>
+        <input type="text" data-field="companyName" value="${escapeHtml(item.companyName || '')}" placeholder="e.g. Acme Hardware" />
+      </div>
+      <div class="popup-card-row">
+        <div class="field">
+          <label>Button text</label>
+          <input type="text" data-field="ctaText" value="${escapeHtml(item.ctaText || '')}" placeholder="e.g. Visit Website" maxlength="30" />
+        </div>
+        <div class="field">
+          <label>Button link</label>
+          <input type="text" data-field="ctaUrl" value="${escapeHtml(item.ctaUrl || '')}" placeholder="https://…" />
+        </div>
+      </div>
+      <label class="popup-status-row">
+        <span>Active in rotation</span>
+        <span class="switch">
+          <input type="checkbox" data-field="enabled" ${item.enabled ? 'checked' : ''} />
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </span>
+      </label>
+      <div class="popup-stats">
+        <span>👁 <strong>${eng.impressions || 0}</strong> shown</span>
+        <span>🖱 <strong>${eng.clicks || 0}</strong> clicked</span>
+      </div>
+      <div class="popup-card-actions">
+        <button class="btn btn-gold btn-sm" data-role="save">Save</button>
+        <button class="btn btn-danger btn-sm" data-role="delete">Delete</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function attachPopupHandlers(id) {
+  const card = popupsGrid.querySelector(`.popup-card[data-id="${id}"]`);
+  if (!card) return;
+
+  let pendingImageUrl = popupsCache[id]?.imageUrl || '';
+
+  const fileInput = card.querySelector('[data-field="imageFile"]');
+  const progressWrap = card.querySelector('[data-role="progress"]');
+  const progressBar = card.querySelector('[data-role="progressBar"]');
+  const imgWrap = card.querySelector('[data-role="imgWrap"]');
+
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    progressWrap.classList.add('active');
+    progressBar.style.width = '0%';
+    try {
+      const url = await uploadToCloudinary(file, (pct) => { progressBar.style.width = pct + '%'; });
+      pendingImageUrl = url;
+      let imgEl = imgWrap.querySelector('img');
+      if (!imgEl) {
+        imgWrap.querySelector('[data-role="noImg"]')?.remove();
+        imgEl = document.createElement('img');
+        imgWrap.prepend(imgEl);
+      }
+      imgEl.src = url;
+      toast('Image uploaded — click Save to apply');
+    } catch (err) {
+      toast('Upload failed: ' + err.message, 'error');
+    } finally {
+      setTimeout(() => progressWrap.classList.remove('active'), 500);
+    }
+  });
+
+  card.querySelector('[data-role="save"]').addEventListener('click', async () => {
+    const companyName = card.querySelector('[data-field="companyName"]').value.trim();
+    const ctaText = card.querySelector('[data-field="ctaText"]').value.trim();
+    let ctaUrl = card.querySelector('[data-field="ctaUrl"]').value.trim();
+    const enabled = card.querySelector('[data-field="enabled"]').checked;
+
+    if (!pendingImageUrl) { toast('Please upload a square image first', 'error'); return; }
+    if (!companyName) { toast('Company name is required', 'error'); return; }
+    if (!ctaUrl) { toast('Button link is required', 'error'); return; }
+    if (!/^https?:\/\//i.test(ctaUrl)) ctaUrl = 'https://' + ctaUrl;
+
+    setSaveState('saving');
+    try {
+      await update(ref(db, `popups/${id}`), {
+        imageUrl: pendingImageUrl,
+        companyName,
+        ctaText: ctaText || 'Visit Website',
+        ctaUrl,
+        enabled,
+        updatedAt: Date.now()
+      });
+      setSaveState('synced');
+      toast(`"${companyName}" saved`);
+    } catch (err) {
+      setSaveState('error');
+      toast('Save failed: ' + err.message, 'error');
+    }
+  });
+
+  card.querySelector('[data-field="enabled"]').addEventListener('change', async (e) => {
+    card.classList.toggle('is-disabled', !e.target.checked);
+    setSaveState('saving');
+    try {
+      await update(ref(db, `popups/${id}`), { enabled: e.target.checked, updatedAt: Date.now() });
+      setSaveState('synced');
+    } catch (err) {
+      setSaveState('error');
+      toast('Could not update: ' + err.message, 'error');
+    }
+  });
+
+  card.querySelector('[data-role="delete"]').addEventListener('click', async () => {
+    const name = popupsCache[id]?.companyName || 'this ad';
+    const ok = await askConfirm('Delete this popup ad?', `"${name}" will stop showing everywhere it's active. This can't be undone.`);
+    if (!ok) return;
+    try {
+      await remove(ref(db, `popups/${id}`));
+      await remove(ref(db, `popupEngagement/${id}`));
+      toast(`"${name}" deleted`);
+    } catch (err) {
+      toast('Delete failed: ' + err.message, 'error');
+    }
+  });
+}
+
+async function addPopupAd() {
+  const entries = sortedEntries(popupsCache);
+  const newAd = {
+    imageUrl: '',
+    companyName: '',
+    ctaText: 'Visit Website',
+    ctaUrl: '',
+    enabled: false,
+    order: entries.length,
+    createdAt: Date.now()
+  };
+  try {
+    await push(popupsRef, newAd);
+    toast('New popup ad added — fill it in below, then switch it Active');
+  } catch (err) {
+    toast('Could not add popup ad: ' + err.message, 'error');
+  }
+}
+
+/* ──────────────────────────────────────────────────────────
+   CATEGORIES — RENDER + CRUD
+   Stored ascending (order 0 = first) — same convention as
+   Shows/Carousel. The public news page reads this list to
+   build its filter pills, in this same order.
+─────────────────────────────────────────────────────────── */
+function sortedCategoryEntries() {
+  return Object.entries(categoriesCache).sort((a, b) => (a[1].order ?? 0) - (b[1].order ?? 0));
+}
+
+const categoryList = document.getElementById('categoryList');
+
+function renderCategories() {
+  const entries = sortedCategoryEntries();
+
+  if (entries.length === 0) {
+    categoryList.innerHTML = `<p class="category-empty">No categories yet — add one above so stories can be filtered on the public site.</p>`;
+    return;
+  }
+
+  categoryList.innerHTML = entries.map(([id, cat]) => `
+    <span class="category-chip" data-id="${id}">
+      ${escapeHtml(cat.name || '')}
+      <button type="button" data-role="deleteCategory" title="Delete category">×</button>
+    </span>`).join('');
+
+  categoryList.querySelectorAll('[data-role="deleteCategory"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const chipId = btn.closest('.category-chip').dataset.id;
+      const name = categoriesCache[chipId]?.name || 'this category';
+      const ok = await askConfirm('Delete this category?', `"${name}" will no longer appear as a filter on the news page. Stories already tagged with it keep the text, but it won't be filterable until you re-add it.`);
+      if (!ok) return;
+      try {
+        await remove(ref(db, `newsCategories/${chipId}`));
+        toast(`"${name}" deleted`);
+      } catch (err) {
+        toast('Delete failed: ' + err.message, 'error');
+      }
+    });
+  });
+}
+
+document.getElementById('categoryAddForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const input = document.getElementById('categoryNameInput');
+  const name = input.value.trim();
+  if (!name) return;
+  const exists = Object.values(categoriesCache).some(c => (c.name || '').toLowerCase() === name.toLowerCase());
+  if (exists) { toast('That category already exists', 'error'); return; }
+
+  const entries = sortedCategoryEntries();
+  try {
+    await push(newsCategoriesRef, { name, order: entries.length, createdAt: Date.now() });
+    input.value = '';
+    toast(`"${name}" category added`);
+  } catch (err) {
+    toast('Could not add category: ' + err.message, 'error');
+  }
+});
+
+/* ──────────────────────────────────────────────────────────
+   NEWS — RENDER + CRUD
+   Stored DESCENDING (higher order = shown first) to match the
+   sort already used by the live public news.html — so the top
+   row in this admin list is always the top card on the site.
+   New cards get the highest order so they land at the top.
+─────────────────────────────────────────────────────────── */
+function sortedNewsEntries() {
+  return Object.entries(newsCache).sort((a, b) => {
+    const ao = a[1].order, bo = b[1].order;
+    if (ao !== undefined && bo !== undefined && ao !== bo) return bo - ao;
+    return (b[1].createdAt || 0) - (a[1].createdAt || 0);
+  });
+}
+
+const newsList = document.getElementById('newsList');
+const newsCountEl = document.getElementById('newsCount');
+
+function categoryOptionsHtml(selected) {
+  let opts = `<option value="" ${!selected ? 'selected' : ''}>Uncategorized</option>`;
+  opts += sortedCategoryEntries().map(([, cat]) => {
+    const name = cat.name || '';
+    return `<option value="${escapeHtml(name)}" ${selected === name ? 'selected' : ''}>${escapeHtml(name)}</option>`;
+  }).join('');
+  return opts;
+}
+
+function renderNews() {
+  const entries = sortedNewsEntries();
+  newsCountEl.textContent = entries.length;
+
+  if (entries.length === 0) {
+    newsList.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1;">
+        <h3>No news posted yet</h3>
+        <p>Add your first story — it'll appear on the public news page instantly.</p>
+      </div>
+      <button class="add-card-btn" id="addNewsBtn">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Add a news card
+      </button>`;
+    document.getElementById('addNewsBtn').addEventListener('click', addNewsCard);
+    return;
+  }
+
+  let html = entries.map(([id, item], i) => newsRowTemplate(id, item, i)).join('');
+  html += `<button class="add-card-btn" id="addNewsBtn">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+    Add a news card
+  </button>`;
+  newsList.innerHTML = html;
+
+  entries.forEach(([id]) => attachNewsRowHandlers(id));
+  document.getElementById('addNewsBtn').addEventListener('click', addNewsCard);
+
+  makeSortable(newsList, '.news-card-admin', async (newOrderIds) => {
+    // Top of the admin list = highest order = first card on the site.
+    const updates = {};
+    newOrderIds.forEach((id, i) => { updates[`${id}/order`] = newOrderIds.length - 1 - i; });
+    setSaveState('saving');
+    try {
+      await update(newsRef, updates);
+      setSaveState('synced');
+    } catch (err) {
+      setSaveState('error');
+      toast('Could not save new order: ' + err.message, 'error');
+    }
+  });
+}
+
+function newsRowTemplate(id, item, index) {
+  const hasImg = !!item.imageUrl;
+  const previewHtml = hasImg
+    ? `<img src="${escapeHtml(item.imageUrl)}" alt="" />`
+    : `<div class="no-img"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></div>`;
+
+  return `
+  <div class="news-card-admin" data-id="${id}" draggable="true">
+    <div class="news-thumb" data-role="preview">
+      ${previewHtml}
+      <div class="news-card-drag-handle" title="Drag to reorder">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="1.6"/><circle cx="16" cy="6" r="1.6"/><circle cx="8" cy="12" r="1.6"/><circle cx="16" cy="12" r="1.6"/><circle cx="8" cy="18" r="1.6"/><circle cx="16" cy="18" r="1.6"/></svg>
+      </div>
+      <div class="news-card-order-badge">#${index + 1}</div>
+    </div>
+
+    <div class="news-card-admin-body">
+      <div class="field">
+        <label>Headline</label>
+        <input type="text" data-field="title" value="${escapeHtml(item.title || '')}" placeholder="e.g. Road closures this weekend" />
+      </div>
+
+      <div class="news-card-admin-row">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" data-field="date" value="${escapeHtml(item.date || '')}" />
+        </div>
+        <div class="field">
+          <label>Category</label>
+          <select data-field="category">${categoryOptionsHtml(item.category || '')}</select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Storyline</label>
+        <textarea data-field="storyline" placeholder="The full story text readers will see on the article page…">${escapeHtml(item.storyline || '')}</textarea>
+      </div>
+
+      <div class="field">
+        <label>Image</label>
+        <input type="file" accept="image/*" data-field="imageFile" />
+        <div class="upload-progress" data-role="progress"><div class="upload-progress-bar" data-role="progressBar"></div></div>
+        <div class="helper-text">Or paste an image URL below.</div>
+        <input type="text" data-field="imageUrl" value="${escapeHtml(item.imageUrl || '')}" placeholder="https://…" style="margin-top:8px;" />
+      </div>
+
+      <div class="news-card-admin-actions">
+        <button class="btn btn-gold btn-sm" data-role="save">Save</button>
+        <button class="btn btn-danger btn-sm" data-role="delete">Delete</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function attachNewsRowHandlers(id) {
+  const row = newsList.querySelector(`.news-card-admin[data-id="${id}"]`);
+  if (!row) return;
+
+  const previewEl = row.querySelector('[data-role="preview"]');
+  let pendingImageUrl = newsCache[id]?.imageUrl || '';
+
+  function refreshPreview() {
+    previewEl.innerHTML = pendingImageUrl
+      ? `<img src="${escapeHtml(pendingImageUrl)}" alt="" />`
+      : `<div class="no-img"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></div>`;
+  }
+
+  row.querySelector('[data-field="imageUrl"]').addEventListener('input', (e) => {
+    pendingImageUrl = e.target.value;
+    refreshPreview();
+  });
+
+  const fileInput = row.querySelector('[data-field="imageFile"]');
+  const progressWrap = row.querySelector('[data-role="progress"]');
+  const progressBar = row.querySelector('[data-role="progressBar"]');
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    progressWrap.classList.add('active');
+    progressBar.style.width = '0%';
+    try {
+      const url = await uploadToCloudinary(file, (pct) => { progressBar.style.width = pct + '%'; });
+      pendingImageUrl = url;
+      row.querySelector('[data-field="imageUrl"]').value = url;
+      refreshPreview();
+      toast('Image uploaded — click Save to apply');
+    } catch (err) {
+      toast('Upload failed: ' + err.message, 'error');
+    } finally {
+      setTimeout(() => progressWrap.classList.remove('active'), 500);
+    }
+  });
+
+  row.querySelector('[data-role="save"]').addEventListener('click', async () => {
+    const payload = {
+      title: row.querySelector('[data-field="title"]').value.trim(),
+      date: row.querySelector('[data-field="date"]').value,
+      category: row.querySelector('[data-field="category"]').value,
+      storyline: row.querySelector('[data-field="storyline"]').value.trim(),
+      imageUrl: row.querySelector('[data-field="imageUrl"]').value.trim(),
+      updatedAt: Date.now()
+    };
+    if (!payload.title) { toast('Headline is required', 'error'); return; }
+
+    setSaveState('saving');
+    try {
+      await update(ref(db, `news/${id}`), payload);
+      setSaveState('synced');
+      toast(`"${payload.title}" saved`);
+    } catch (err) {
+      setSaveState('error');
+      toast('Save failed: ' + err.message, 'error');
+    }
+  });
+
+  row.querySelector('[data-role="delete"]').addEventListener('click', async () => {
+    const title = newsCache[id]?.title || 'this story';
+    const ok = await askConfirm('Delete this story?', `"${title}" will be removed from the public news page. This can't be undone.`);
+    if (!ok) return;
+    try {
+      await remove(ref(db, `news/${id}`));
+      toast(`"${title}" deleted`);
+    } catch (err) {
+      toast('Delete failed: ' + err.message, 'error');
+    }
+  });
+}
+
+async function addNewsCard() {
+  const entries = sortedNewsEntries();
+  const topOrder = entries.length ? (entries[0][1].order ?? entries.length - 1) : -1;
+  const newItem = {
+    title: 'New story',
+    date: new Date().toISOString().slice(0, 10),
+    category: '',
+    storyline: '',
+    imageUrl: '',
+    order: topOrder + 1,
+    createdAt: Date.now()
+  };
+  try {
+    await push(newsRef, newItem);
+    toast('New story added — edit it below, it will appear at the top of the public page');
+  } catch (err) {
+    toast('Could not add story: ' + err.message, 'error');
+  }
+}
+</script>
+</body>
+</html>
