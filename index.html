@@ -660,7 +660,7 @@
   .popup-settings-row:last-child { margin-bottom: 0; }
   .popup-settings-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 16px;
   }
 
@@ -1032,9 +1032,16 @@
         </div>
         <div class="popup-settings-row popup-settings-grid">
           <div class="field" style="margin-bottom:0;">
-            <label>Delay before showing</label>
+            <label>Delay before first popup</label>
             <div class="input-suffix-wrap">
               <input type="number" id="popupDelayInput" min="0" max="120" step="1" />
+              <span class="input-suffix">seconds</span>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>Interval between popups</label>
+            <div class="input-suffix-wrap">
+              <input type="number" id="popupIntervalInput" min="5" max="3600" step="1" />
               <span class="input-suffix">seconds</span>
             </div>
           </div>
@@ -1047,7 +1054,7 @@
             </select>
           </div>
         </div>
-        <div class="helper-text" style="margin-top:14px;">The delay and frequency above apply wherever popups are switched on. If more than one ad is active below, a random one is shown to each visitor so ads rotate fairly.</div>
+        <div class="helper-text" style="margin-top:14px;">Each popup shows one ad at a time — never a carousel. The first one appears after the delay above; once a visitor closes it (or it's been on screen a while), the next one appears after the interval above, picked randomly from your active ads below, on and on for as long as they stay on the page. Turn either switch above off at any time to stop popups completely without deleting your ads.</div>
       </div>
 
       <div class="popup-grid" id="popupsGrid"></div>
@@ -1354,7 +1361,7 @@ let carouselCache = {};
 let newsCache = {};
 let categoriesCache = {};
 let popupsCache = {};
-let popupSettingsCache = { enabled: true, newsEnabled: false, delaySeconds: 4, frequency: 'session' };
+let popupSettingsCache = { enabled: true, newsEnabled: false, delaySeconds: 4, intervalSeconds: 60, frequency: 'session' };
 let popupEngagementCache = {};
 
 function initData() {
@@ -1404,7 +1411,7 @@ function initData() {
   }, (err) => { console.error(err); toast('Could not load popup ads: ' + err.message, 'error'); });
 
   unsubPopupSettings = onValue(popupSettingsRef, (snap) => {
-    popupSettingsCache = { enabled: true, newsEnabled: false, delaySeconds: 4, frequency: 'session', ...(snap.val() || {}) };
+    popupSettingsCache = { enabled: true, newsEnabled: false, delaySeconds: 4, intervalSeconds: 60, frequency: 'session', ...(snap.val() || {}) };
     renderPopupSettings();
   }, (err) => { console.error(err); toast('Could not load popup settings: ' + err.message, 'error'); });
 
@@ -1832,6 +1839,7 @@ async function addSlide() {
 const popupEnabledToggle = document.getElementById('popupEnabledToggle');
 const popupEnabledNewsToggle = document.getElementById('popupEnabledNewsToggle');
 const popupDelayInput = document.getElementById('popupDelayInput');
+const popupIntervalInput = document.getElementById('popupIntervalInput');
 const popupFrequencySelect = document.getElementById('popupFrequencySelect');
 let settingsRenderGuard = false;
 
@@ -1840,6 +1848,7 @@ function renderPopupSettings() {
   popupEnabledToggle.checked = !!popupSettingsCache.enabled;
   popupEnabledNewsToggle.checked = !!popupSettingsCache.newsEnabled;
   popupDelayInput.value = popupSettingsCache.delaySeconds ?? 4;
+  popupIntervalInput.value = popupSettingsCache.intervalSeconds ?? 60;
   popupFrequencySelect.value = popupSettingsCache.frequency || 'session';
   settingsRenderGuard = false;
 }
@@ -1876,6 +1885,16 @@ popupDelayInput.addEventListener('change', () => {
   savePopupSettings({ delaySeconds: val });
 });
 
+popupIntervalInput.addEventListener('change', () => {
+  if (settingsRenderGuard) return;
+  let val = parseInt(popupIntervalInput.value, 10);
+  if (isNaN(val) || val < 5) val = 5;
+  if (val > 3600) val = 3600;
+  popupIntervalInput.value = val;
+  savePopupSettings({ intervalSeconds: val });
+  toast(`Popups will now wait ${val} seconds between each one`);
+});
+
 popupFrequencySelect.addEventListener('change', () => {
   if (settingsRenderGuard) return;
   savePopupSettings({ frequency: popupFrequencySelect.value });
@@ -1887,9 +1906,10 @@ popupFrequencySelect.addEventListener('change', () => {
    company name, a customizable call-to-action button, and the
    URL it opens. The "Active" switch controls whether it's in
    rotation — wherever popups are switched on (homepage and/or
-   news page), if more than one ad is active a random one is
-   picked per visitor so ads rotate fairly. Impressions/clicks
-   are written by whichever page shows the popup.
+   news page), each active ad is shown on its own, one popup at
+   a time, in a randomly shuffled order that repeats for as long
+   as the visitor stays on the page. Impressions/clicks are
+   written by whichever page shows the popup.
 ─────────────────────────────────────────────────────────── */
 const popupsGrid = document.getElementById('popupsGrid');
 const popupsCountEl = document.getElementById('popupsCount');
